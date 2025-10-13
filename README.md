@@ -218,6 +218,18 @@ This project uses GitHub Actions for continuous integration and deployment:
 
 See the [.github/workflows](.github/workflows) directory for details.
 
+## Troubleshooting
+
+遇到问题？查看我们的 [故障排查指南](TROUBLESHOOTING.md) 获取常见问题的解决方案。
+
+Having issues? Check our [Troubleshooting Guide](TROUBLESHOOTING.md) for common problems and solutions.
+
+常见问题 / Common Issues:
+- 🔒 API Key 泄露和清理 / API Key leakage and cleanup
+- 🔄 Gist 同步错误 / Gist sync errors
+- 🧪 测试失败 / Test failures
+- 🔨 构建问题 / Build issues
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
