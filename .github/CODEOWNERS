@@ -1,0 +1,23 @@
+# This file defines code ownership for automatic review requests
+# Each line is a file pattern followed by one or more owners
+
+# Default owners for everything in the repo
+* @lemon956
+
+# Core functionality
+/cmd/ @lemon956
+/internal/ @lemon956
+/pkg/ @lemon956
+
+# Configuration and documentation
+*.md @lemon956
+*.yaml @lemon956
+*.yml @lemon956
+
+# CI/CD workflows
+/.github/ @lemon956
+
+# Go modules
+go.mod @lemon956
+go.sum @lemon956
+

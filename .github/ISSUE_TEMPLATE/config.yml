@@ -1,0 +1,9 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation / 文档
+    url: https://github.com/lemon956/aicommit/blob/master/README.md
+    about: 查看项目文档获取更多信息 / Check the documentation for more information
+  - name: 💬 Discussions / 讨论区
+    url: https://github.com/lemon956/aicommit/discussions
+    about: 提问、分享想法或讨论 / Ask questions, share ideas, or discuss
+
