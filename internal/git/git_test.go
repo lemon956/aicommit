@@ -28,6 +28,17 @@ func TestGit_GetDiff(t *testing.T) {
 		t.Skip("Not in a git repository")
 	}
 
-	_, err := git.GetDiff()
+	diff, err := git.GetDiff()
+	
+	// It's OK if there are no staged changes in CI environment
+	if err != nil && err.Error() == "no staged changes found" {
+		t.Log("No staged changes found - this is expected in CI")
+		return
+	}
+	
+	// For other errors or success, check the results
 	assert.NoError(t, err)
+	if err == nil {
+		assert.NotEmpty(t, diff, "Diff should not be empty when there are staged changes")
+	}
 }
