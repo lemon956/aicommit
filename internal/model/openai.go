@@ -15,10 +15,10 @@ import (
 )
 
 type OpenAIProvider struct {
-	apiKey   string
-	model    string
 	client   *http.Client
 	template prompt.Template
+	apiKey   string
+	model    string
 }
 
 type OpenAIRequest struct {
@@ -30,8 +30,8 @@ type OpenAIRequest struct {
 
 // OpenAIListModelsResponse represents the response from OpenAI models list API
 type OpenAIListModelsResponse struct {
-	Object  string            `json:"object"`
 	Data    []OpenAIModelInfo `json:"data"`
+	Object  string            `json:"object"`
 	FirstID string            `json:"first_id"`
 	LastID  string            `json:"last_id"`
 	HasMore bool              `json:"has_more"`
@@ -39,25 +39,25 @@ type OpenAIListModelsResponse struct {
 
 // OpenAIModelInfo represents individual model information
 type OpenAIModelInfo struct {
-	Object            string      `json:"object"`
-	ID                string      `json:"id"`
-	Model             string      `json:"model"`
-	Created           int         `json:"created"`
-	RequestID         string      `json:"request_id"`
 	ToolChoice        interface{} `json:"tool_choice"`
-	Usage             TokenUsage  `json:"usage"`
-	Seed              int64       `json:"seed"`
-	TopP              float64     `json:"top_p"`
-	Temperature       float64     `json:"temperature"`
-	PresencePenalty   float64     `json:"presence_penalty"`
-	FrequencyPenalty  float64     `json:"frequency_penalty"`
-	SystemFingerprint string      `json:"system_fingerprint"`
 	InputUser         interface{} `json:"input_user"`
-	ServiceTier       string      `json:"service_tier"`
 	Tools             interface{} `json:"tools"`
 	Metadata          interface{} `json:"metadata"`
 	Choices           []Choice    `json:"choices"`
 	ResponseFormat    interface{} `json:"response_format"`
+	Usage             TokenUsage  `json:"usage"`
+	TopP              float64     `json:"top_p"`
+	Temperature       float64     `json:"temperature"`
+	PresencePenalty   float64     `json:"presence_penalty"`
+	FrequencyPenalty  float64     `json:"frequency_penalty"`
+	Seed              int64       `json:"seed"`
+	Object            string      `json:"object"`
+	ID                string      `json:"id"`
+	Model             string      `json:"model"`
+	RequestID         string      `json:"request_id"`
+	SystemFingerprint string      `json:"system_fingerprint"`
+	ServiceTier       string      `json:"service_tier"`
+	Created           int         `json:"created"`
 }
 
 // TokenUsage represents token usage information
@@ -194,7 +194,10 @@ func (o *OpenAIProvider) checkModelExists(model string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body) // nosec G104
+		var body []byte
+		if b, err := io.ReadAll(resp.Body); err == nil {
+			body = b
+		}
 		return fmt.Errorf("models API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -275,7 +278,9 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 
 	var responseBody []byte
 	if resp.StatusCode != http.StatusOK {
-		responseBody, _ = io.ReadAll(resp.Body) // nosec G104
+		if body, err := io.ReadAll(resp.Body); err == nil {
+			responseBody = body
+		}
 		return "", fmt.Errorf("openai API returned status %d: %s (model: %s)", resp.StatusCode, string(responseBody), o.model)
 	}
 

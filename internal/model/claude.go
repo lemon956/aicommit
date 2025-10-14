@@ -12,10 +12,10 @@ import (
 )
 
 type ClaudeProvider struct {
-	apiKey   string
-	model    string
 	client   *http.Client
 	template prompt.Template
+	apiKey   string
+	model    string
 }
 
 type ClaudeRequest struct {
@@ -87,7 +87,10 @@ func (c *ClaudeProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body) // nosec G104
+		var body []byte
+		if b, err := io.ReadAll(resp.Body); err == nil {
+			body = b
+		}
 		return "", fmt.Errorf("claude API returned status %d: %s", resp.StatusCode, string(body))
 	}
 

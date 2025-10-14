@@ -12,10 +12,10 @@ import (
 )
 
 type DeepSeekProvider struct {
-	apiKey   string
-	model    string
 	client   *http.Client
 	template prompt.Template
+	apiKey   string
+	model    string
 }
 
 type DeepSeekRequest struct {
@@ -81,7 +81,10 @@ func (d *DeepSeekProvider) GenerateCommitMessage(ctx context.Context, diff strin
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body) // nosec G104
+		var body []byte
+		if b, err := io.ReadAll(resp.Body); err == nil {
+			body = b
+		}
 		return "", fmt.Errorf("deepseek API returned status %d: %s", resp.StatusCode, string(body))
 	}
 

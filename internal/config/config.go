@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
+	APIKeys  map[string]string `mapstructure:"api_keys"`
 	Model    string            `mapstructure:"model"`
 	Provider string            `mapstructure:"provider"`
-	APIKeys  map[string]string `mapstructure:"api_keys"`
 }
 
 func Load() (*Config, error) {
