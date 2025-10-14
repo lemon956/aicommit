@@ -25,7 +25,10 @@ func ValidateCommitMessage(message string) error {
 
 func isValidFormat(message string) bool {
 	conventionalPattern := `^(feat|fix|docs|style|refactor|test|chore|perf|build|ci)(\(.+\))?: .+`
-	matched, _ := regexp.MatchString(conventionalPattern, message)
+	matched, err := regexp.MatchString(conventionalPattern, message)
+	if err != nil {
+		return false
+	}
 	return matched
 }
 

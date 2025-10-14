@@ -194,11 +194,11 @@ func (o *OpenAIProvider) checkModelExists(model string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body) // nosec G104
 		return fmt.Errorf("models API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	// 读取响应体用于调试
+	// 读取响应体
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read models response body: %w", err)
@@ -226,17 +226,6 @@ func (o *OpenAIProvider) checkModelExists(model string) error {
 	}
 
 	return fmt.Errorf("model '%s' not found in available models", model)
-}
-
-func shouldUseNewParams(model string) bool {
-	// GPT-4及更新的模型使用max_completion_tokens
-	newModels := []string{"gpt-4", "gpt-4-turbo", "gpt-4o", "gpt-5", "o1-", "o3-"}
-	for _, prefix := range newModels {
-		if strings.HasPrefix(model, prefix) {
-			return true
-		}
-	}
-	return false
 }
 
 func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
@@ -286,12 +275,15 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 
 	var responseBody []byte
 	if resp.StatusCode != http.StatusOK {
-		responseBody, _ = io.ReadAll(resp.Body)
+		responseBody, _ = io.ReadAll(resp.Body) // nosec G104
 		return "", fmt.Errorf("openai API returned status %d: %s (model: %s)", resp.StatusCode, string(responseBody), o.model)
 	}
 
-	// 读取响应体用于调试
-	responseBody, _ = io.ReadAll(resp.Body)
+	// 读取响应体
+	responseBody, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %w", err)
+	}
 
 	var response ChatCompletionResponse
 	if err := json.Unmarshal(responseBody, &response); err != nil {
@@ -303,20 +295,22 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	}
 
 	choice := response.Choices[0]
+	return o.processResponse(choice)
+}
+
+func (o *OpenAIProvider) processResponse(choice Choice) (string, error) {
 	content := choice.Message.Content
 
 	// 处理各种finish_reason情况
 	switch choice.FinishReason {
 	case "stop":
-		// 正常完成
 		if content == "" {
 			return "", fmt.Errorf("model completed but returned empty content (model: %s)", o.model)
 		}
 		return content, nil
 	case "length":
-		// 达到token限制
 		if content == "" {
-			return "", fmt.Errorf("model reached token limit and returned empty content (model: %s, max_tokens: %d)", o.model, 150)
+			return "", fmt.Errorf("model reached token limit and returned empty content (model: %s)", o.model)
 		}
 		return content, nil
 	case "content_filter":

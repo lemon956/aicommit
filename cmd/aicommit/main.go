@@ -189,7 +189,7 @@ api_keys:
   deepseek: ""  # Your DeepSeek API key
 `
 
-	if err := os.WriteFile(configFile, []byte(defaultConfig), 0644); err != nil {
+	if err := os.WriteFile(configFile, []byte(defaultConfig), 0600); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 

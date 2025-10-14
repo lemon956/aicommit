@@ -81,7 +81,7 @@ func (d *DeepSeekProvider) GenerateCommitMessage(ctx context.Context, diff strin
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body) // nosec G104
 		return "", fmt.Errorf("deepseek API returned status %d: %s", resp.StatusCode, string(body))
 	}
 

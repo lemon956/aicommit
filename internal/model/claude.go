@@ -87,7 +87,7 @@ func (c *ClaudeProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body) // nosec G104
 		return "", fmt.Errorf("claude API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
