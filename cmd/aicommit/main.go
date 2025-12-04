@@ -91,7 +91,13 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	ctx := context.Background()
-	fmt.Printf("Generating commit message using %s with model %s...\n", provider.Name(), cfg.Model)
+
+	modelName := cfg.Model
+	if cfg.Provider == "custom" && cfg.Custom.Model != "" {
+		modelName = cfg.Custom.Model
+	}
+
+	fmt.Printf("Generating commit message using %s with model %s...\n", provider.Name(), modelName)
 
 	commitMessage, err := provider.GenerateCommitMessage(ctx, diff)
 	if err != nil {
@@ -151,7 +157,7 @@ func initConfig(cmd *cobra.Command, args []string) error {
 	defaultConfig := `# aicommit configuration file
 model: claude-3-sonnet-20240229
 provider: claude
-editor: ""  # Optional: vim, nano, code, etc. If empty, uses $EDITOR or $VISUAL
+editor: ""  # Optional: nvim, vim, nano, code, etc. If empty, uses $EDITOR or $VISUAL
 
 # API keys - you can also use environment variables:
 # AICOMMIT_CLAUDE_API_KEY, AICOMMIT_OPENAI_API_KEY, AICOMMIT_DEEPSEEK_API_KEY

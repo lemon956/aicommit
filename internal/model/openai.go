@@ -94,7 +94,7 @@ func NewOpenAIProvider(apiKey, model string) *OpenAIProvider {
 	return &OpenAIProvider{
 		apiKey:   apiKey,
 		model:    model,
-		client:   &http.Client{},
+		client:   &http.Client{Timeout: 60 * time.Second},
 		template: prompt.GetGlobalTemplate(),
 	}
 }
@@ -167,6 +167,8 @@ func (o *OpenAIProvider) checkModelExists(model string) error {
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", o.apiKey))
+
+	logRequest(req, nil)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
@@ -251,6 +253,8 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", o.apiKey))
+
+	logRequest(req, body)
 
 	resp, err := o.client.Do(req)
 	if err != nil {

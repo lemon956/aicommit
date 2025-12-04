@@ -32,7 +32,9 @@ func Open(content string, editorCmd string) (string, error) {
 			editorCmd = os.Getenv("VISUAL")
 			if editorCmd == "" {
 				// Default fallbacks
-				if _, err := exec.LookPath("vim"); err == nil {
+				if _, err := exec.LookPath("nvim"); err == nil {
+					editorCmd = "nvim"
+				} else if _, err := exec.LookPath("vim"); err == nil {
 					editorCmd = "vim"
 				} else if _, err := exec.LookPath("nano"); err == nil {
 					editorCmd = "nano"

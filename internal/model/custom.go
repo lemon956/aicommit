@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 
+	"time"
+
 	"github.com/aicommit/aicommit/pkg/prompt"
 )
 
@@ -24,7 +26,7 @@ func NewCustomProvider(url, apiKey, model string) *CustomProvider {
 		apiKey:   apiKey,
 		model:    model,
 		url:      url,
-		client:   &http.Client{},
+		client:   &http.Client{Timeout: 60 * time.Second},
 		template: prompt.GetGlobalTemplate(),
 	}
 }
@@ -59,6 +61,8 @@ func (c *CustomProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	if c.apiKey != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.apiKey))
 	}
+
+	logRequest(req, body)
 
 	resp, err := c.client.Do(req)
 	if err != nil {

@@ -74,6 +74,8 @@ func (d *DeepSeekProvider) GenerateCommitMessage(ctx context.Context, diff strin
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", d.apiKey))
 
+	logRequest(req, body)
+
 	resp, err := d.client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to send request: %w", err)
