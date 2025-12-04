@@ -1,5 +1,7 @@
 # aicommit
 
+[English](README.md) | [中文](README_zh.md)
+
 [![CI](https://github.com/lemon956/aicommit/workflows/CI/badge.svg)](https://github.com/lemon956/aicommit/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lemon956/aicommit)](https://goreportcard.com/report/github.com/lemon956/aicommit)
 [![License](https://img.shields.io/github/license/lemon956/aicommit)](LICENSE)
@@ -116,9 +118,6 @@ aicommit --dry-run
 ### Advanced Usage
 
 ```bash
-# Use specific config file
-aicommit --config /path/to/config.yaml
-
 # Use environment variables (overrides config file)
 export AICOMMIT_PROVIDER=openai
 export AICOMMIT_OPENAI_API_KEY=your-key

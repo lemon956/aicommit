@@ -7,6 +7,8 @@ model: gpt-5-nano-2025-08-07  # 自定义模型名称
 # Provider: claude, openai, or deepseek
 provider: openai
 
+aditor: "vim"
+
 # API keys - you can also use environment variables:
 # AICOMMIT_CLAUDE_API_KEY, AICOMMIT_OPENAI_API_KEY, AICOMMIT_DEEPSEEK_API_KEY
 api_keys:

@@ -31,19 +31,19 @@ type OpenAIRequest struct {
 // OpenAIListModelsResponse represents the response from OpenAI models list API
 type OpenAIListModelsResponse struct {
 	Data    []OpenAIModelInfo `json:"data"`
-	Object  string            `json:"object"`
 	FirstID string            `json:"first_id"`
 	LastID  string            `json:"last_id"`
+	Object  string            `json:"object"`
 	HasMore bool              `json:"has_more"`
 }
 
 // OpenAIModelInfo represents individual model information
 type OpenAIModelInfo struct {
+	Choices           []Choice    `json:"choices"`
 	ToolChoice        interface{} `json:"tool_choice"`
 	InputUser         interface{} `json:"input_user"`
 	Tools             interface{} `json:"tools"`
 	Metadata          interface{} `json:"metadata"`
-	Choices           []Choice    `json:"choices"`
 	ResponseFormat    interface{} `json:"response_format"`
 	Usage             TokenUsage  `json:"usage"`
 	TopP              float64     `json:"top_p"`
@@ -69,22 +69,22 @@ type TokenUsage struct {
 
 // Choice represents a completion choice
 type Choice struct {
-	Index        int         `json:"index"`
 	Message      Message     `json:"message"`
-	FinishReason string      `json:"finish_reason"`
 	Logprobs     interface{} `json:"logprobs"`
+	FinishReason string      `json:"finish_reason"`
+	Index        int         `json:"index"`
 }
 
 // ChatCompletionResponse represents the chat completion API response
 type ChatCompletionResponse struct {
+	Choices           []Choice   `json:"choices"`
 	ID                string     `json:"id"`
 	Object            string     `json:"object"`
-	Created           int        `json:"created"`
 	Model             string     `json:"model"`
-	Choices           []Choice   `json:"choices"`
-	Usage             TokenUsage `json:"usage"`
 	ServiceTier       string     `json:"service_tier"`
 	SystemFingerprint string     `json:"system_fingerprint"`
+	Usage             TokenUsage `json:"usage"`
+	Created           int        `json:"created"`
 }
 
 func NewOpenAIProvider(apiKey, model string) *OpenAIProvider {
@@ -105,20 +105,20 @@ func (o *OpenAIProvider) SetTemplate(template prompt.Template) {
 
 // OpenAIModelsResponse represents the response from OpenAI models list API
 type OpenAIModelsResponse struct {
-	Object string `json:"object"`
-	Data   []struct {
+	Data []struct {
 		ID      string `json:"id"`
 		Object  string `json:"object"`
-		Created int    `json:"created"`
 		OwnedBy string `json:"owned_by"`
+		Created int    `json:"created"`
 	} `json:"data"`
+	Object string `json:"object"`
 }
 
 // modelCache caches available models to reduce API calls
 var modelCache = struct {
-	models    []string
-	cacheTime time.Time
 	mu        sync.Mutex
+	cacheTime time.Time
+	models    []string
 }{}
 
 const cacheDuration = 24 * time.Hour
@@ -223,12 +223,6 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	// 验证模型名称
 	if err := o.validateOpenAIModel(o.model); err != nil {
 		return "", err
-	}
-
-	// 如果验证通过但模型看起来不常见，给出警告
-	if strings.Contains(o.model, "gpt-5") {
-		// 记录但不阻止，因为API验证可能通过
-		// 实际使用时如果返回空内容，用户会知道模型有问题
 	}
 
 	prompt := o.template.GeneratePrompt(diff)
