@@ -14,6 +14,8 @@ func NewProvider(cfg *config.Config) (Provider, error) {
 		return NewOpenAIProvider(cfg.GetAPIKey("openai"), cfg.Model), nil
 	case "deepseek":
 		return NewDeepSeekProvider(cfg.GetAPIKey("deepseek"), cfg.Model), nil
+	case "custom":
+		return NewCustomProvider(cfg.Custom.URL, cfg.Custom.APIKey, cfg.Custom.Model), nil
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", cfg.Provider)
 	}

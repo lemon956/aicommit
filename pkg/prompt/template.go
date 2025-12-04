@@ -2,16 +2,19 @@ package prompt
 
 import "fmt"
 
+// Template defines the interface for generating prompts
 type Template interface {
 	GeneratePrompt(diff string) string
 	GetSystemPrompt() string
 }
 
+// CommitMessageTemplate is the hardcoded template for commit messages
 type CommitMessageTemplate struct {
 	systemPrompt string
 	userPrompt   string
 }
 
+// NewDefaultTemplate creates a new instance of the default template
 func NewDefaultTemplate() *CommitMessageTemplate {
 	return &CommitMessageTemplate{
 		systemPrompt: `You are a senior software engineer writing Git commit messages. Write concise, specific messages that precisely describe the code changes. Never use generic or vague language.`,
@@ -31,7 +34,7 @@ RULES:
 
 ANALYZE:
 - What new capability was added? (feat)
-- What bug was fixed? (fix) 
+- What bug was fixed? (fix)
 - What was restructured? (refactor)
 - What configuration/tooling changed? (chore)
 - Read the CODE CONTENT, not just filenames
@@ -67,48 +70,9 @@ func (t *CommitMessageTemplate) GetSystemPrompt() string {
 	return t.systemPrompt
 }
 
-func (t *CommitMessageTemplate) SetSystemPrompt(prompt string) {
-	t.systemPrompt = prompt
-}
+var globalTemplate Template = NewDefaultTemplate()
 
-func (t *CommitMessageTemplate) SetUserPrompt(prompt string) {
-	t.userPrompt = prompt
-}
-
-type CustomTemplate struct {
-	systemPrompt string
-	userPrompt   string
-}
-
-func NewCustomTemplate(systemPrompt, userPrompt string) *CustomTemplate {
-	return &CustomTemplate{
-		systemPrompt: systemPrompt,
-		userPrompt:   userPrompt,
-	}
-}
-
-func (t *CustomTemplate) GeneratePrompt(diff string) string {
-	return fmt.Sprintf(t.userPrompt, diff)
-}
-
-func (t *CustomTemplate) GetSystemPrompt() string {
-	return t.systemPrompt
-}
-
-var globalTemplate Template
-
-func init() {
-	globalTemplate = NewDefaultTemplate()
-}
-
+// GetGlobalTemplate returns the global template instance
 func GetGlobalTemplate() Template {
 	return globalTemplate
-}
-
-func SetGlobalTemplate(template Template) {
-	globalTemplate = template
-}
-
-func ResetToDefault() {
-	globalTemplate = NewDefaultTemplate()
 }

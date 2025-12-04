@@ -133,28 +133,10 @@ func (o *OpenAIProvider) validateOpenAIModel(model string) error {
 		return fmt.Errorf("model name cannot contain whitespace")
 	}
 
-	// 对于特定的自定义模型，直接允许通过
-	if model == "gpt-5-nano-2025-08-07" {
-		return nil
-	}
-
-	// 首先检查缓存
-	modelCache.mu.Lock()
-	if time.Since(modelCache.cacheTime) < cacheDuration {
-		for _, cachedModel := range modelCache.models {
-			if cachedModel == model {
-				modelCache.mu.Unlock()
-				return nil
-			}
-		}
-	}
-	modelCache.mu.Unlock()
-
 	// 尝试从OpenAI API获取模型列表
 	if err := o.checkModelExists(model); err != nil {
 		// 如果API调用失败，回退到基本的格式验证
-		// 允许用户自定义模型，如 gpt-5-nano-2025-08-07
-		return nil
+		return fmt.Errorf("model validation failed: %w", err)
 	}
 
 	return nil

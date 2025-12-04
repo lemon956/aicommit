@@ -12,6 +12,14 @@ type Config struct {
 	APIKeys  map[string]string `mapstructure:"api_keys"`
 	Model    string            `mapstructure:"model"`
 	Provider string            `mapstructure:"provider"`
+	Editor   string            `mapstructure:"editor"`
+	Custom   CustomConfig      `mapstructure:"custom"`
+}
+
+type CustomConfig struct {
+	URL    string `mapstructure:"url"`
+	APIKey string `mapstructure:"api_key"`
+	Model  string `mapstructure:"model"`
 }
 
 func Load() (*Config, error) {
@@ -55,8 +63,15 @@ func Load() (*Config, error) {
 }
 
 func (c *Config) GetAPIKey(provider string) string {
+	// Environment variables take precedence
+	envKey := fmt.Sprintf("AICOMMIT_%s_API_KEY", provider)
+	// Check env var using both standard GetEnv and Viper (which handles case sensitivity and prefixes)
+	if val := os.Getenv(envKey); val != "" {
+		return val
+	}
+
 	if apiKey, ok := c.APIKeys[provider]; ok && apiKey != "" {
 		return apiKey
 	}
-	return os.Getenv(fmt.Sprintf("AICOMMIT_%s_API_KEY", provider))
+	return ""
 }

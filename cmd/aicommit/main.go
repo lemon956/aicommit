@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/aicommit/aicommit/internal/config"
 	"github.com/aicommit/aicommit/internal/git"
 	"github.com/aicommit/aicommit/internal/model"
+	"github.com/aicommit/aicommit/pkg/editor"
 	"github.com/aicommit/aicommit/pkg/prompt"
 	"github.com/aicommit/aicommit/pkg/validator"
 	"github.com/spf13/cobra"
@@ -55,52 +57,8 @@ func main() {
 		RunE:  initConfig,
 	}
 
-	// Prompt customization commands
-	promptCmd := &cobra.Command{
-		Use:   "prompt",
-		Short: "Manage prompt templates",
-	}
-
-	promptDefaultCmd := &cobra.Command{
-		Use:   "default",
-		Short: "Use default prompt template",
-		Run: func(cmd *cobra.Command, args []string) {
-			SetDefaultPrompt()
-			fmt.Println("Switched to default prompt template")
-		},
-	}
-
-	promptChineseCmd := &cobra.Command{
-		Use:   "chinese",
-		Short: "Use Chinese prompt template",
-		Run: func(cmd *cobra.Command, args []string) {
-			SetChinesePrompt()
-			fmt.Println("Switched to Chinese prompt template")
-		},
-	}
-
-	promptDetailedCmd := &cobra.Command{
-		Use:   "detailed",
-		Short: "Use detailed prompt template",
-		Run: func(cmd *cobra.Command, args []string) {
-			SetDetailedPrompt()
-			fmt.Println("Switched to detailed prompt template")
-		},
-	}
-
-	promptMinimalCmd := &cobra.Command{
-		Use:   "minimal",
-		Short: "Use minimal prompt template",
-		Run: func(cmd *cobra.Command, args []string) {
-			SetMinimalPrompt()
-			fmt.Println("Switched to minimal prompt template")
-		},
-	}
-
-	promptCmd.AddCommand(promptDefaultCmd, promptChineseCmd, promptDetailedCmd, promptMinimalCmd)
-
 	configCmd.AddCommand(configInitCmd)
-	rootCmd.AddCommand(versionCmd, configCmd, promptCmd)
+	rootCmd.AddCommand(versionCmd, configCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
@@ -153,6 +111,19 @@ func run(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
+	// Open editor for user to review/edit
+	fmt.Println("\nOpening editor to review/edit commit message...")
+	newCommitMessage, err := editor.Open(commitMessage, cfg.Editor)
+	if err != nil {
+		return fmt.Errorf("failed to open editor: %w", err)
+	}
+
+	commitMessage = strings.TrimSpace(newCommitMessage)
+	if commitMessage == "" {
+		fmt.Println("\nCommit message is empty, aborting commit.")
+		return nil
+	}
+
 	if err := gitClient.Commit(commitMessage); err != nil {
 		return fmt.Errorf("failed to commit: %w", err)
 	}
@@ -180,6 +151,7 @@ func initConfig(cmd *cobra.Command, args []string) error {
 	defaultConfig := `# aicommit configuration file
 model: claude-3-sonnet-20240229
 provider: claude
+editor: ""  # Optional: vim, nano, code, etc. If empty, uses $EDITOR or $VISUAL
 
 # API keys - you can also use environment variables:
 # AICOMMIT_CLAUDE_API_KEY, AICOMMIT_OPENAI_API_KEY, AICOMMIT_DEEPSEEK_API_KEY
@@ -187,6 +159,13 @@ api_keys:
   claude: ""    # Your Claude API key
   openai: ""    # Your OpenAI API key
   deepseek: ""  # Your DeepSeek API key
+
+# Custom provider configuration (optional)
+# To use, set provider: custom above
+custom:
+  url: ""      # Full URL to completion endpoint (e.g. http://localhost:11434/v1/chat/completions)
+  api_key: ""  # API Key if required
+  model: ""    # Model name to pass in request
 `
 
 	if err := os.WriteFile(configFile, []byte(defaultConfig), 0600); err != nil {
