@@ -29,8 +29,13 @@ func TestValidateCommitMessage(t *testing.T) {
 		},
 		{
 			name:    "too long message",
-			message: "feat: this is a very long commit message that exceeds the 72 character limit and should be rejected",
+			message: "feat: this is a very long commit message that exceeds the 250 character limit and should be rejected because it contains way too much text and goes on and on with unnecessary details that make the commit message extremely verbose and difficult to read in git logs",
 			wantErr: true,
+		},
+		{
+			name:    "valid long message under limit",
+			message: "feat: this is a reasonably long commit message that is under the 250 character limit so it should be accepted even though it contains quite a bit of text to describe the changes being made",
+			wantErr: false,
 		},
 		{
 			name:    "invalid format",

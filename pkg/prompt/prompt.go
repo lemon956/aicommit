@@ -13,7 +13,7 @@ func ValidateCommitMessage(message string) error {
 	}
 
 	if len(message) > 250 {
-		return fmt.Errorf("commit message too long: %d characters (max 80)", len(message))
+		return fmt.Errorf("commit message too long: %d characters (max 250)", len(message))
 	}
 
 	if !isValidFormat(message) {
