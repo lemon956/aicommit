@@ -12,7 +12,7 @@ func ValidateCommitMessage(message string) error {
 		return fmt.Errorf("commit message cannot be empty")
 	}
 
-	if len(message) > 80 {
+	if len(message) > 250 {
 		return fmt.Errorf("commit message too long: %d characters (max 80)", len(message))
 	}
 
