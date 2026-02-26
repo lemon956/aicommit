@@ -17,48 +17,46 @@ type CommitMessageTemplate struct {
 // NewDefaultTemplate creates a new instance of the default template
 func NewDefaultTemplate() *CommitMessageTemplate {
 	return &CommitMessageTemplate{
-		systemPrompt: `You are a senior software engineer writing Git commit messages. Write concise, specific messages that precisely describe the code changes. Never use generic or vague language.`,
-		userPrompt: `Generate a commit message for this diff. Be extremely specific about what functionality was added or changed.
+		systemPrompt: `You are a senior software engineer. You write Git commit messages that follow the gitcommit(5) guidelines. Be concise, concrete, and accurate.`,
+		userPrompt: `Write a Git commit message for this diff. Focus on what changed and why it matters (not filenames).
 
 <diff>
 %s
 </diff>
 
 RULES:
-1. Format: <type>(<scope>): <precise description>
-2. Types: feat|fix|refactor|perf|docs|style|test|chore|ci|build
-3. Scope: file/module name (auth, api, db, cli, config, etc.)
-4. Description: imperative mood, lowercase, no period
-5. CRITICAL: Total message must be under 80 characters
-6. Be SPECIFIC about functionality, not files
+1. Output ONLY the commit message (no Markdown, no quotes, no code fences).
+2. Use this structure:
+   - Line 1: subject (summary)
+   - Optional: blank line
+   - Optional: body (one or more lines)
+3. Subject:
+   - English, imperative mood if possible
+   - No trailing period
+   - Aim for <= 50 characters; hard limit: 72 characters
+4. Body (only if needed to explain why/impact/behavior change):
+   - MUST be separated from the subject by a blank line
+   - Wrap lines to <= 72 characters
+   - Explain WHAT and WHY; avoid implementation details unless necessary
+5. If no body is needed, return a single-line subject.
 
 ANALYZE:
-- What new capability was added? (feat)
-- What bug was fixed? (fix)
-- What was restructured? (refactor)
-- What configuration/tooling changed? (chore)
+- What new capability was added?
+- What bug was fixed?
+- What behavior changed and why?
+- What risks or compatibility notes matter?
 - Read the CODE CONTENT, not just filenames
 
-FORBIDDEN PATTERNS:
-❌ "add/update files" - too vague
-❌ "initial commit" - describe what was created
-❌ "various changes" - be specific
-❌ "fix issues" - specify what was fixed
-❌ Listing files - describe functionality instead
-
 EXAMPLES:
-✓ feat(auth): implement JWT token authentication
-✓ fix(validator): handle null email addresses
-✓ refactor(http): extract request handling to middleware
-✓ chore(deps): upgrade go modules to latest versions
-✓ feat(cli): add dry-run flag for commit preview
+✓ Add dry-run flag to preview generated commit message
+✓ Fix panic when staged diff is empty
+✓ Refactor config loader to support XDG_CONFIG_HOME
+✓ Update dependencies to address security advisory
 
-If this is an initial commit with project setup:
-✓ feat: initialize aicommit CLI tool
-✓ feat: create git commit message generator
-✓ chore: setup Go project with dependencies
+✓ Add editor support for reviewing commit message
 
-Return ONLY the commit message.`,
+This lets users edit the generated message before committing and reduces
+incorrect commits caused by prompt misunderstandings.`,
 	}
 }
 

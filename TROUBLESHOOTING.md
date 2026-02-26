@@ -174,11 +174,16 @@ max_length: 50
 
 **确保格式**：
 ```
-type(scope): description
+subject line
+
+body (optional)
 ```
 
-**有效类型**：
-- feat, fix, docs, style, refactor, test, chore, perf, build, ci
+**常见要求**：
+- 主题行（第 1 行）不超过 72 字符
+- 如果有正文，主题行与正文之间必须有一行空行
+- 正文建议每行不超过 72 字符（必要时手动换行）
+- 可选 trailers（如 `Co-authored-by: ...`、`Signed-off-by: ...`）
 
 ## 📝 日志调试
 
@@ -214,4 +219,3 @@ aicommit --dry-run
 # 更新到最新版本
 go install github.com/lemon956/aicommit/cmd/aicommit@latest
 ```
-

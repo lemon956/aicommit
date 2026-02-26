@@ -56,6 +56,7 @@ func (d *DeepSeekProvider) GenerateCommitMessage(ctx context.Context, diff strin
 	request := DeepSeekRequest{
 		Model: d.model,
 		Messages: []Message{
+			{Role: "system", Content: d.template.GetSystemPrompt()},
 			{Role: "user", Content: prompt},
 		},
 		MaxTokens: 150,

@@ -14,7 +14,7 @@ AI 驱动的 git commit 消息生成器，使用多种 AI 模型根据暂存的�
 
 - 🤖 **多 AI 模型支持**：Claude、OpenAI 和 DeepSeek
 - ⚙️ **可配置**：通过 YAML 文件或环境变量轻松配置
-- 🎯 **符合 Git 规范**：生成符合约定式提交格式的提交消息
+- 🎯 **符合 Git 规范**：生成符合 `gitcommit(5)` 建议的提交消息
 - 🔒 **安全**：API 密钥可存储在环境变量中
 - 🧪 **完善的测试**：全面的测试覆盖
 - 🚀 **简单快速**：无冗余，开箱即用
@@ -126,22 +126,21 @@ aicommit
 
 ## 提交消息格式
 
-aicommit 生成的提交消息遵循 [约定式提交](https://www.conventionalcommits.org/zh-hans/) 规范：
+aicommit 生成的提交消息遵循 Git 官方 `gitcommit(5)` 的建议：
 
 ```
-<类型>: <描述>
+<主题行>
+
+<正文>（可选）
 
 示例：
-feat: 添加用户认证功能
-fix: 修复登录问题
-docs: 更新 README 安装说明
-style: 使用 gofmt 格式化代码
-refactor: 简化错误处理逻辑
-test: 添加用户服务单元测试
-chore: 更新依赖
-```
+Add JWT auth to CLI login
 
-有效类型：`feat`、`fix`、`docs`、`style`、`refactor`、`test`、`chore`、`perf`、`build`、`ci`
+Add editor support for reviewing commit message
+
+This lets users edit the generated message before committing and reduces
+incorrect commits caused by prompt misunderstandings.
+```
 
 ## API 密钥设置
 
@@ -229,5 +228,4 @@ go build -o aicommit cmd/aicommit/main.go
 
 - [Cobra](https://github.com/spf13/cobra) - CLI 框架
 - [Viper](https://github.com/spf13/viper) - 配置管理
-- [约定式提交](https://www.conventionalcommits.org/zh-hans/) - 提交消息规范
-
+- Git 官方文档（`gitcommit(5)`）- 提交消息建议

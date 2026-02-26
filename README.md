@@ -14,7 +14,7 @@ AI-powered git commit message generator that uses various AI models to create me
 
 - 🤖 **Multiple AI Model Support**: Claude, OpenAI, and DeepSeek
 - ⚙️ **Configurable**: Easy configuration via YAML file or environment variables
-- 🎯 **Git Standards Compliant**: Generates commit messages following conventional commits format
+- 🎯 **Git Standards Compliant**: Generates commit messages following `gitcommit(5)` guidelines
 - 🔒 **Secure**: API keys can be stored in environment variables
 - 🧪 **Well Tested**: Comprehensive test coverage
 - 🚀 **Simple & Fast**: No bloat, just works
@@ -126,22 +126,21 @@ aicommit
 
 ## Commit Message Format
 
-aicommit generates commit messages following the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+aicommit generates commit messages following the `gitcommit(5)` guidelines:
 
 ```
-<type>: <description>
+<subject>
+
+<body> (optional)
 
 Examples:
-feat: add user authentication
-fix: resolve login issue
-docs: update README with installation instructions
-style: format code with gofmt
-refactor: simplify error handling logic
-test: add unit tests for user service
-chore: update dependencies
-```
+Add JWT auth to CLI login
 
-Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `build`, `ci`
+Add editor support for reviewing commit message
+
+This lets users edit the generated message before committing and reduces
+incorrect commits caused by prompt misunderstandings.
+```
 
 ## API Key Setup
 
@@ -237,4 +236,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Cobra](https://github.com/spf13/cobra) - CLI framework
 - [Viper](https://github.com/spf13/viper) - Configuration management
-- [Conventional Commits](https://www.conventionalcommits.org/) - Commit message specification
+- Git documentation (`gitcommit(5)`) - Commit message guidelines

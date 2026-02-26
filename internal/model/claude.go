@@ -20,6 +20,7 @@ type ClaudeProvider struct {
 
 type ClaudeRequest struct {
 	Model     string    `json:"model"`
+	System    string    `json:"system,omitempty"`
 	Messages  []Message `json:"messages"`
 	MaxTokens int       `json:"max_tokens"`
 }
@@ -59,7 +60,8 @@ func (c *ClaudeProvider) GenerateCommitMessage(ctx context.Context, diff string)
 	prompt := c.template.GeneratePrompt(diff)
 
 	request := ClaudeRequest{
-		Model: c.model,
+		Model:  c.model,
+		System: c.template.GetSystemPrompt(),
 		Messages: []Message{
 			{Role: "user", Content: prompt},
 		},
