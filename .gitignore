@@ -20,7 +20,8 @@ go.work
 # Build directory
 build/
 dist/
-aicommit*
+/aicommit
+/aicommit.exe
 
 # IDE specific files
 .idea/
