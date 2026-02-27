@@ -14,6 +14,7 @@ const (
 )
 
 var trailerPattern = regexp.MustCompile(`^[A-Za-z-]+: `)
+var conventionalSubjectPattern = regexp.MustCompile(`^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]+\))?(!)?: .+`)
 
 func ValidateCommitMessage(message string) error {
 	message = strings.TrimSpace(normalizeNewlines(message))
@@ -53,6 +54,23 @@ func ValidateCommitMessage(message string) error {
 		}
 	}
 
+	return nil
+}
+
+func ValidateConventionalCommitMessage(message string) error {
+	message = strings.TrimSpace(normalizeNewlines(message))
+	if message == "" {
+		return fmt.Errorf("commit message cannot be empty")
+	}
+
+	lines := strings.Split(message, "\n")
+	subject := strings.TrimRight(lines[0], " \t")
+	if subject == "" {
+		return fmt.Errorf("commit subject cannot be empty")
+	}
+	if !conventionalSubjectPattern.MatchString(subject) {
+		return fmt.Errorf("commit subject must use Conventional Commits format: <type>(<scope>)?: <summary>")
+	}
 	return nil
 }
 

@@ -138,17 +138,17 @@ aicommit
 
 ## Commit Message Format
 
-aicommit generates commit messages following the `gitcommit(5)` guidelines:
+aicommit generates commit messages following the `gitcommit(5)` guidelines, with a Conventional Commits subject line (type required):
 
 ```
-<subject>
+<type>(<scope>)?: <subject>
 
 <body> (optional)
 
 Examples:
-Add JWT auth to CLI login
+feat(auth): add JWT auth to CLI login
 
-Add editor support for reviewing commit message
+feat(editor): add editor support for reviewing commit message
 
 This lets users edit the generated message before committing and reduces
 incorrect commits caused by prompt misunderstandings.

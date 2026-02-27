@@ -111,6 +111,9 @@ func run(cmd *cobra.Command, args []string) error {
 	if err := prompt.ValidateCommitMessage(commitMessage); err != nil {
 		return fmt.Errorf("generated commit message is invalid: %w", err)
 	}
+	if err := prompt.ValidateConventionalCommitMessage(commitMessage); err != nil {
+		return fmt.Errorf("generated commit message is invalid: %w", err)
+	}
 
 	fmt.Printf("\nGenerated commit message:\n%s\n", commitMessage)
 
@@ -119,16 +122,11 @@ func run(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Open editor for user to review/edit
-	fmt.Println("\nOpening editor to review/edit commit message...")
-	newCommitMessage, err := editor.Open(commitMessage, cfg.Editor)
+	commitMessage, err = reviewCommitMessage(commitMessage, cfg.Editor)
 	if err != nil {
-		return fmt.Errorf("failed to open editor: %w", err)
+		return err
 	}
-
-	commitMessage = strings.TrimSpace(newCommitMessage)
 	if commitMessage == "" {
-		fmt.Println("\nCommit message is empty, aborting commit.")
 		return nil
 	}
 
@@ -138,6 +136,35 @@ func run(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("\nCommit successful!")
 	return nil
+}
+
+func reviewCommitMessage(commitMessage string, editorCmd string) (string, error) {
+	for attempt := 0; attempt < 3; attempt++ {
+		fmt.Println("\nOpening editor to review/edit commit message...")
+		newCommitMessage, err := editor.Open(commitMessage, editorCmd)
+		if err != nil {
+			return "", fmt.Errorf("failed to open editor: %w", err)
+		}
+
+		commitMessage = strings.TrimSpace(newCommitMessage)
+		if commitMessage == "" {
+			fmt.Println("\nCommit message is empty, aborting commit.")
+			return "", nil
+		}
+
+		if err := prompt.ValidateCommitMessage(commitMessage); err != nil {
+			fmt.Printf("\nCommit message is invalid: %v\n", err)
+			continue
+		}
+		if err := prompt.ValidateConventionalCommitMessage(commitMessage); err != nil {
+			fmt.Printf("\nCommit message is invalid: %v\n", err)
+			continue
+		}
+
+		return commitMessage, nil
+	}
+
+	return "", fmt.Errorf("commit message is still invalid after multiple edits")
 }
 
 func initConfig(cmd *cobra.Command, args []string) error {

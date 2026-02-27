@@ -138,17 +138,17 @@ aicommit
 
 ## 提交消息格式
 
-aicommit 生成的提交消息遵循 Git 官方 `gitcommit(5)` 的建议：
+aicommit 生成的提交消息遵循 Git 官方 `gitcommit(5)` 的建议，并要求主题行使用 Conventional Commits（必须包含类型）：
 
 ```
-<主题行>
+<type>(<scope>)?: <主题行>
 
 <正文>（可选）
 
 示例：
-Add JWT auth to CLI login
+feat(auth): add JWT auth to CLI login
 
-Add editor support for reviewing commit message
+feat(editor): add editor support for reviewing commit message
 
 This lets users edit the generated message before committing and reduces
 incorrect commits caused by prompt misunderstandings.
