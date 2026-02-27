@@ -14,9 +14,19 @@ func TestValidateConventionalCommitMessage(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "valid type not case sensitive",
+			message: "Feat: add thing",
+			wantErr: false,
+		},
+		{
 			name:    "valid scope",
 			message: "fix(auth): handle missing token",
 			wantErr: false,
+		},
+		{
+			name:    "invalid scope with whitespace",
+			message: "fix(auth api): handle missing token",
+			wantErr: true,
 		},
 		{
 			name:    "valid breaking marker",
@@ -29,9 +39,14 @@ func TestValidateConventionalCommitMessage(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "unknown type",
+			name:    "custom type allowed by spec",
 			message: "feature: add new thing",
-			wantErr: true,
+			wantErr: false,
+		},
+		{
+			name:    "custom type with hyphen",
+			message: "build-system: update pipeline",
+			wantErr: false,
 		},
 	}
 

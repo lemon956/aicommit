@@ -14,7 +14,14 @@ const (
 )
 
 var trailerPattern = regexp.MustCompile(`^[A-Za-z-]+: `)
-var conventionalSubjectPattern = regexp.MustCompile(`^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]+\))?(!)?: .+`)
+
+// Conventional Commits v1.0.0 summary format:
+// <type>[optional scope][optional !]: <description>
+//
+// Notes:
+// - The spec says types are not case sensitive for implementors.
+// - We allow a conservative subset for type/scope characters to prevent malformed subjects.
+var conventionalSubjectPattern = regexp.MustCompile(`(?i)^[a-z][a-z0-9-]*(\([^\s)]+\))?(!)?: .+`)
 
 func ValidateCommitMessage(message string) error {
 	message = strings.TrimSpace(normalizeNewlines(message))
@@ -69,7 +76,7 @@ func ValidateConventionalCommitMessage(message string) error {
 		return fmt.Errorf("commit subject cannot be empty")
 	}
 	if !conventionalSubjectPattern.MatchString(subject) {
-		return fmt.Errorf("commit subject must use Conventional Commits format: <type>(<scope>)?: <summary>")
+		return fmt.Errorf("commit subject must use Conventional Commits v1.0.0 summary format: <type>(<scope>)?!: <description>")
 	}
 	return nil
 }

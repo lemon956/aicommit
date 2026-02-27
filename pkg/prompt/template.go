@@ -17,7 +17,7 @@ type CommitMessageTemplate struct {
 // NewDefaultTemplate creates a new instance of the default template
 func NewDefaultTemplate() *CommitMessageTemplate {
 	return &CommitMessageTemplate{
-		systemPrompt: `You are a senior software engineer. You write Git commit messages that follow the gitcommit(5) guidelines AND Conventional Commits for the subject line. Be concise, concrete, and accurate.`,
+		systemPrompt: `You are a senior software engineer. You write Git commit messages that follow the gitcommit(5) guidelines and use a Conventional Commits v1.0.0-style summary line. Be concise, concrete, and accurate.`,
 		userPrompt: `Write a Git commit message for this diff. Focus on what changed and why it matters (not filenames).
 
 <diff>
@@ -30,10 +30,13 @@ RULES:
    - Line 1: subject (summary)
    - Optional: blank line
    - Optional: body (one or more lines)
+   - Optional: footers (one or more trailer lines)
 3. Subject:
-   - MUST use Conventional Commits format: <type>(<scope>)?: <summary>
-   - Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
-   - Use an optional scope when it helps (e.g. feat(auth): ...)
+   - MUST use Conventional Commits v1.0.0 summary format: <type>(<scope>)?!: <description>
+   - type MUST be a single lowercase word (do not invent new punctuation in type)
+   - scope is optional and should be short (e.g. auth, cli, git)
+   - "!" is optional and indicates a breaking change
+    - Use an optional scope when it helps (e.g. feat(auth): ...)
    - English, imperative mood if possible
    - No trailing period
    - Aim for <= 50 characters; hard limit: 100 characters
@@ -41,7 +44,13 @@ RULES:
    - MUST be separated from the subject by a blank line
    - Wrap lines to <= 120 characters
    - Explain WHAT and WHY; avoid implementation details unless necessary
-5. If no body is needed, return a single-line subject.
+5. Footers (optional):
+   - After the body (or after a blank line if there is no body)
+   - Use Git trailer style: Token: value
+   - For breaking changes, you MAY also use a footer:
+     - BREAKING CHANGE: <description>
+     - BREAKING-CHANGE: <description>
+6. If no body/footers are needed, return a single-line subject.
 
 ANALYZE:
 - What new capability was added?
@@ -55,6 +64,7 @@ EXAMPLES:
 ✓ fix(git): avoid panic when staged diff is empty
 ✓ refactor(config): support XDG_CONFIG_HOME
 ✓ chore(deps): update dependencies to address security advisory
+✓ feat(api)!: remove deprecated endpoint
 
 ✓ feat(editor): add editor support for reviewing commit message
 
