@@ -16,7 +16,35 @@ func New(workDir string) *Git {
 	return &Git{workDir: workDir}
 }
 
+func validateTagName(tag string) error {
+	tag = strings.TrimSpace(tag)
+	if tag == "" {
+		return fmt.Errorf("tag cannot be empty")
+	}
+	if strings.HasPrefix(tag, "-") {
+		return fmt.Errorf("invalid tag name: cannot start with '-'")
+	}
+	if strings.ContainsAny(tag, " \t\n\r") {
+		return fmt.Errorf("invalid tag name: cannot contain whitespace")
+	}
+	if strings.Contains(tag, "..") || strings.Contains(tag, "@{") || strings.Contains(tag, "//") {
+		return fmt.Errorf("invalid tag name: contains invalid sequence")
+	}
+	// Conservative subset of git refname rules.
+	if strings.ContainsAny(tag, "~^:?*[\\") {
+		return fmt.Errorf("invalid tag name: contains invalid character")
+	}
+	if strings.HasSuffix(tag, "/") || strings.HasSuffix(tag, ".") || strings.HasSuffix(tag, ".lock") {
+		return fmt.Errorf("invalid tag name: invalid suffix")
+	}
+	if strings.HasPrefix(tag, "/") {
+		return fmt.Errorf("invalid tag name: cannot start with '/'")
+	}
+	return nil
+}
+
 func (g *Git) runGit(args ...string) (string, error) {
+	// #nosec G204 -- We execute the git binary with explicit arguments (no shell).
 	cmd := exec.Command("git", args...)
 	cmd.Dir = g.workDir
 
@@ -75,6 +103,7 @@ func (g *Git) Commit(message string) error {
 		return fmt.Errorf("failed to close temp commit message file: %w", err)
 	}
 
+	// #nosec G204 -- We execute the git binary with explicit arguments (no shell).
 	cmd := exec.Command("git", "commit", "-F", tmpFile.Name())
 	cmd.Dir = g.workDir
 	cmd.Stdin = os.Stdin
@@ -99,6 +128,7 @@ func (g *Git) IsRepository() bool {
 }
 
 func (g *Git) LatestTag() (tag string, ok bool, err error) {
+	// #nosec G204 -- We execute the git binary with explicit arguments (no shell).
 	cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
 	cmd.Dir = g.workDir
 
@@ -126,12 +156,12 @@ func (g *Git) LatestTag() (tag string, ok bool, err error) {
 }
 
 func (g *Git) TagExists(tag string) (bool, error) {
-	tag = strings.TrimSpace(tag)
-	if tag == "" {
-		return false, fmt.Errorf("tag cannot be empty")
+	if err := validateTagName(tag); err != nil {
+		return false, err
 	}
 
-	cmd := exec.Command("git", "rev-parse", "-q", "--verify", "refs/tags/"+tag)
+	// #nosec G204 -- We execute the git binary with explicit arguments (no shell); tag is validated.
+	cmd := exec.Command("git", "rev-parse", "-q", "--verify", "refs/tags/"+strings.TrimSpace(tag))
 	cmd.Dir = g.workDir
 
 	var stdout bytes.Buffer
@@ -190,9 +220,8 @@ func (g *Git) DiffNameStatus(rangeSpec string) (string, error) {
 }
 
 func (g *Git) CreateAnnotatedTag(tag string, message string) error {
-	tag = strings.TrimSpace(tag)
-	if tag == "" {
-		return fmt.Errorf("tag cannot be empty")
+	if err := validateTagName(tag); err != nil {
+		return err
 	}
 
 	tmpFile, err := os.CreateTemp("", "aicommit-tag-*.txt")
@@ -214,7 +243,8 @@ func (g *Git) CreateAnnotatedTag(tag string, message string) error {
 		return fmt.Errorf("failed to close temp tag message file: %w", err)
 	}
 
-	cmd := exec.Command("git", "tag", "-a", tag, "-F", tmpFile.Name())
+	// #nosec G204 -- We execute the git binary with explicit arguments (no shell); tag is validated.
+	cmd := exec.Command("git", "tag", "-a", strings.TrimSpace(tag), "-F", tmpFile.Name())
 	cmd.Dir = g.workDir
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
