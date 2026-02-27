@@ -52,12 +52,12 @@ func (c *ClaudeProvider) SetTemplate(template prompt.Template) {
 	c.template = template
 }
 
-func (c *ClaudeProvider) GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
+func (c *ClaudeProvider) GenerateMessage(ctx context.Context, input string) (string, error) {
 	if c.apiKey == "" {
 		return "", fmt.Errorf("claude API key is required")
 	}
 
-	prompt := c.template.GeneratePrompt(diff)
+	prompt := c.template.GeneratePrompt(input)
 
 	request := ClaudeRequest{
 		Model:  c.model,

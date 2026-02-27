@@ -31,12 +31,16 @@ func NewCustomProvider(url, apiKey, model string) *CustomProvider {
 	}
 }
 
-func (c *CustomProvider) GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
+func (c *CustomProvider) SetTemplate(template prompt.Template) {
+	c.template = template
+}
+
+func (c *CustomProvider) GenerateMessage(ctx context.Context, input string) (string, error) {
 	if c.url == "" {
 		return "", fmt.Errorf("custom provider URL is required")
 	}
 
-	promptStr := c.template.GeneratePrompt(diff)
+	promptStr := c.template.GeneratePrompt(input)
 
 	// Use standard OpenAI chat format as it's the most common
 	request := OpenAIRequest{

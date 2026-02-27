@@ -115,6 +115,18 @@ aicommit
 aicommit --dry-run
 ```
 
+### Tagging Releases
+
+Generate an annotated tag message (release notes) with AI, review/edit it in your editor, and create a local annotated tag:
+
+```bash
+aicommit tag v1.2.3
+```
+
+Notes:
+- Tags are created locally by default. To push: `git push origin v1.2.3` (or `git push --tags`).
+- `--dry-run` shows the generated + edited tag message without creating the tag.
+
 ### Advanced Usage
 
 ```bash

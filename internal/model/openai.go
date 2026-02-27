@@ -215,7 +215,7 @@ func (o *OpenAIProvider) checkModelExists(model string) error {
 	return fmt.Errorf("model '%s' not found in available models", model)
 }
 
-func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
+func (o *OpenAIProvider) GenerateMessage(ctx context.Context, input string) (string, error) {
 	if o.apiKey == "" {
 		return "", fmt.Errorf("openai API key is required")
 	}
@@ -225,7 +225,7 @@ func (o *OpenAIProvider) GenerateCommitMessage(ctx context.Context, diff string)
 		return "", err
 	}
 
-	prompt := o.template.GeneratePrompt(diff)
+	prompt := o.template.GeneratePrompt(input)
 
 	request := OpenAIRequest{
 		Model: o.model,

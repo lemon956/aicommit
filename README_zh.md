@@ -115,6 +115,18 @@ aicommit
 aicommit --dry-run
 ```
 
+### 创建 Tag（发布说明）
+
+使用 AI 生成 annotated tag message（release notes），先在编辑器中校验/修改，然后创建本地 annotated tag：
+
+```bash
+aicommit tag v1.2.3
+```
+
+说明：
+- 默认只在本地创建 tag。如需推送：`git push origin v1.2.3`（或 `git push --tags`）。
+- `--dry-run` 会展示生成 + 编辑后的 tag message，但不会创建 tag。
+
 ### 高级用法
 
 ```bash

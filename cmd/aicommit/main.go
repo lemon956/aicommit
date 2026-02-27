@@ -59,6 +59,7 @@ func main() {
 
 	configCmd.AddCommand(configInitCmd)
 	rootCmd.AddCommand(versionCmd, configCmd)
+	rootCmd.AddCommand(newTagCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
@@ -89,6 +90,7 @@ func run(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create provider: %w", err)
 	}
+	provider.SetTemplate(prompt.NewDefaultTemplate())
 
 	ctx := context.Background()
 
@@ -99,7 +101,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("Generating commit message using %s with model %s...\n", provider.Name(), modelName)
 
-	commitMessage, err := provider.GenerateCommitMessage(ctx, diff)
+	commitMessage, err := provider.GenerateMessage(ctx, diff)
 	if err != nil {
 		return fmt.Errorf("failed to generate commit message: %w", err)
 	}

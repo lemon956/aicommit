@@ -46,12 +46,12 @@ func (d *DeepSeekProvider) SetTemplate(template prompt.Template) {
 	d.template = template
 }
 
-func (d *DeepSeekProvider) GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
+func (d *DeepSeekProvider) GenerateMessage(ctx context.Context, input string) (string, error) {
 	if d.apiKey == "" {
 		return "", fmt.Errorf("deepseek API key is required")
 	}
 
-	prompt := d.template.GeneratePrompt(diff)
+	prompt := d.template.GeneratePrompt(input)
 
 	request := DeepSeekRequest{
 		Model: d.model,

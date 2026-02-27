@@ -1,8 +1,13 @@
 package model
 
-import "context"
+import (
+	"context"
+
+	"github.com/aicommit/aicommit/pkg/prompt"
+)
 
 type Provider interface {
-	GenerateCommitMessage(ctx context.Context, diff string) (string, error)
+	GenerateMessage(ctx context.Context, input string) (string, error)
+	SetTemplate(template prompt.Template)
 	Name() string
 }

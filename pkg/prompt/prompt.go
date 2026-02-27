@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	maxCommitMessageLength = 2000
-	maxSubjectLength       = 72
-	maxBodyLineLength      = 72
-	maxTrailerLineLength   = 120
+	maxCommitMessageLength = 5000
+	maxSubjectLength       = 100
+	maxBodyLineLength      = 120
+	maxTrailerLineLength   = 200
 )
 
 var trailerPattern = regexp.MustCompile(`^[A-Za-z-]+: `)
@@ -70,18 +70,22 @@ func isTrailerLine(line string) bool {
 }
 
 func CleanCommitMessage(message string) string {
-	message = strings.TrimSpace(normalizeNewlines(message))
+	return CleanAIText(message)
+}
 
-	if extracted, ok := extractFirstFencedCodeBlock(message); ok {
-		message = extracted
+func CleanAIText(text string) string {
+	text = strings.TrimSpace(normalizeNewlines(text))
+
+	if extracted, ok := extractFirstFencedCodeBlock(text); ok {
+		text = extracted
 	}
 
-	message = strings.TrimSpace(message)
-	message = trimMatchingWrapper(message, '`')
-	message = trimMatchingWrapper(message, '"')
-	message = trimMatchingWrapper(message, '\'')
+	text = strings.TrimSpace(text)
+	text = trimMatchingWrapper(text, '`')
+	text = trimMatchingWrapper(text, '"')
+	text = trimMatchingWrapper(text, '\'')
 
-	return strings.TrimSpace(message)
+	return strings.TrimSpace(text)
 }
 
 func normalizeNewlines(s string) string {
