@@ -162,15 +162,7 @@ go mod verify
 
 ## 🐛 常见错误
 
-### 1. commit message too long
-
-**解决方案**：
-```yaml
-# 在配置中添加更严格的限制
-max_length: 50
-```
-
-### 2. invalid commit message format
+### 1. invalid commit message format
 
 **确保格式**：
 ```
@@ -180,9 +172,9 @@ body (optional)
 ```
 
 **常见要求**：
-- 主题行（第 1 行）不超过 72 字符
+- 主题行（第 1 行）建议保持简洁
 - 如果有正文，主题行与正文之间必须有一行空行
-- 正文建议每行不超过 72 字符（必要时手动换行）
+- 正文建议保持易读（必要时手动换行）
 - 可选 trailers（如 `Co-authored-by: ...`、`Signed-off-by: ...`）
 
 ## 📝 日志调试

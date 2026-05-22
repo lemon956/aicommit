@@ -38,9 +38,9 @@ func TestValidateCommitMessage(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "subject too long",
+			name:    "long subject is accepted",
 			message: "This subject line is intentionally made longer than one hundred characters to fail validation in the unit tests",
-			wantErr: true,
+			wantErr: false,
 		},
 		{
 			name:    "missing blank line between subject and body",
@@ -48,9 +48,9 @@ func TestValidateCommitMessage(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "body line too long",
+			name:    "long body line is accepted",
 			message: "Subject\n\nThis body line is intentionally made longer than one hundred and twenty characters to fail validation in the unit tests for this repository",
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 

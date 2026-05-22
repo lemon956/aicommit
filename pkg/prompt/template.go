@@ -36,13 +36,13 @@ RULES:
    - type MUST be a single lowercase word (do not invent new punctuation in type)
    - scope is optional and should be short (e.g. auth, cli, git)
    - "!" is optional and indicates a breaking change
-    - Use an optional scope when it helps (e.g. feat(auth): ...)
+   - Use an optional scope when it helps (e.g. feat(auth): ...)
    - English, imperative mood if possible
    - No trailing period
-   - Aim for <= 50 characters; hard limit: 100 characters
+   - Prefer a concise, readable subject
 4. Body (only if needed to explain why/impact/behavior change):
    - MUST be separated from the subject by a blank line
-   - Wrap lines to <= 120 characters
+   - Keep lines readable when practical
    - Explain WHAT and WHY; avoid implementation details unless necessary
 5. Footers (optional):
    - After the body (or after a blank line if there is no body)

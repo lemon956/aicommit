@@ -6,15 +6,6 @@ import (
 	"strings"
 )
 
-const (
-	maxCommitMessageLength = 5000
-	maxSubjectLength       = 100
-	maxBodyLineLength      = 120
-	maxTrailerLineLength   = 200
-)
-
-var trailerPattern = regexp.MustCompile(`^[A-Za-z-]+: `)
-
 // Conventional Commits v1.0.0 summary format:
 // <type>[optional scope][optional !]: <description>
 //
@@ -29,35 +20,15 @@ func ValidateCommitMessage(message string) error {
 		return fmt.Errorf("commit message cannot be empty")
 	}
 
-	if len(message) > maxCommitMessageLength {
-		return fmt.Errorf("commit message too long: %d characters (max %d)", len(message), maxCommitMessageLength)
-	}
-
 	lines := strings.Split(message, "\n")
 	subject := strings.TrimRight(lines[0], " \t")
 	if subject == "" {
 		return fmt.Errorf("commit subject cannot be empty")
 	}
-	if len(subject) > maxSubjectLength {
-		return fmt.Errorf("commit subject too long: %d characters (max %d)", len(subject), maxSubjectLength)
-	}
 
 	if hasBody(lines[1:]) {
 		if len(lines) < 2 || lines[1] != "" {
 			return fmt.Errorf("invalid commit message format: separate subject and body with a blank line")
-		}
-
-		for i, line := range lines[2:] {
-			if line == "" {
-				continue
-			}
-			limit := maxBodyLineLength
-			if isTrailerLine(line) {
-				limit = maxTrailerLineLength
-			}
-			if len(line) > limit {
-				return fmt.Errorf("commit body line too long at line %d: %d characters (max %d)", i+3, len(line), limit)
-			}
 		}
 	}
 
@@ -88,10 +59,6 @@ func hasBody(lines []string) bool {
 		}
 	}
 	return false
-}
-
-func isTrailerLine(line string) bool {
-	return trailerPattern.MatchString(line)
 }
 
 func CleanCommitMessage(message string) string {
